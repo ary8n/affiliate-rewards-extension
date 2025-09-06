@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Affiliate Rewards Settings</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin:20px; background:#0f141a; color:#f4f7fa; }
+    h1 { font-size:20px; margin:0 0 12px; }
+    label { display:block; margin:14px 0 6px; font-weight:600; }
+    input[type=text] { width:100%; padding:8px; border-radius:6px; border:1px solid #334; background:#162028; color:#fff; }
+    .row { margin-bottom:12px; }
+    button { background:#ffb347; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:600; }
+    button:hover { background:#ffc56b; }
+    .status { margin-top:12px; font-size:12px; opacity:0.75; }
+  </style>
+</head>
+<body>
+  <h1>Affiliate Rewards – Settings</h1>
+  <div class="row">
+    <label><input type="checkbox" id="bannerEnabled" /> Enable banner on product pages</label>
+  </div>
+  <div class="row">
+    <label for="remoteDataUrl">Remote affiliate data URL (optional)</label>
+    <input id="remoteDataUrl" type="text" placeholder="https://example.com/affiliate-list.json" />
+  </div>
+  <button id="saveBtn">Save Settings</button>
+  <div class="status" id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>

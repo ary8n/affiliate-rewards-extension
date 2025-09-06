@@ -3,11 +3,34 @@
 
 const BANNER_ID = "affiliate_rewards_banner";
 const DATA_PATH = chrome.runtime.getURL("data/affiliate-list.json");
+let settingsCache = { bannerEnabled: true, remoteDataUrl: null };
+
+function loadSettings() {
+  return new Promise(resolve => {
+    chrome.storage.sync.get(["bannerEnabled", "remoteDataUrl"], data => {
+      settingsCache.bannerEnabled = data.bannerEnabled !== false; // default true
+      settingsCache.remoteDataUrl = data.remoteDataUrl || null;
+      resolve(settingsCache);
+    });
+  });
+}
 
 async function loadAffiliateData() {
   try {
+    // Try remote first if configured
+    if (settingsCache.remoteDataUrl) {
+      try {
+        const remote = await fetch(settingsCache.remoteDataUrl, { cache: "no-cache" });
+        if (remote.ok) {
+          const json = await remote.json();
+          if (Array.isArray(json)) return json;
+        }
+      } catch (e) {
+        console.warn("[AffiliateRewards] Remote data fetch failed, falling back", e);
+      }
+    }
     const res = await fetch(DATA_PATH, { cache: "no-cache" });
-    if (!res.ok) throw new Error("Failed to load affiliate list");
+    if (!res.ok) throw new Error("Failed to load affiliate list local");
     return res.json();
   } catch (e) {
     console.warn("[AffiliateRewards] Data load error", e);
@@ -123,6 +146,8 @@ function incrementPoints(delta) {
 }
 
 async function main() {
+  await loadSettings();
+  if (!settingsCache.bannerEnabled) return;
   const product = detectProduct();
   if (!product) return; // Not a product page
   const list = await loadAffiliateData();
