@@ -1,0 +1,17 @@
+[
+  {
+    "productId": "B0TESTASIN1",
+    "platform": "amazon",
+    "affiliateUrl": "https://www.amazon.in/dp/B0TESTASIN1?tag=yourtag-21",
+    "commissionRate": 0.04,
+    "ownerType": "self"
+  },
+  {
+    "productId": "MOBTEST123",
+    "platform": "flipkart",
+    "affiliateUrl": "https://www.flipkart.com/product/p/itMOBTEST123?affid=yourid",
+    "commissionRate": 0.05,
+    "ownerType": "contributor",
+    "contributorId": "user_abc"
+  }
+]

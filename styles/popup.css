@@ -1,0 +1,9 @@
+body { margin:0; font-family: system-ui, Arial, sans-serif; background:#0f141a; color:#f4f7fa; width:260px; }
+#app { padding:14px 14px 18px; display:flex; flex-direction:column; gap:12px; }
+h1 { font-size:18px; margin:0 0 4px; background:linear-gradient(90deg,#ffb347,#ffd27f); -webkit-background-clip:text; color:transparent; font-weight:700; }
+.points-box { display:flex; justify-content:space-between; background:#1c2833; padding:10px 12px; border-radius:8px; font-size:14px; }
+.points-box .label { opacity:0.75; }
+.points-box .value { font-weight:600; letter-spacing:0.5px; }
+button { background:#ffb347; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; }
+button:hover { background:#ffc56b; }
+.note { font-size:11px; line-height:1.3; opacity:0.65; margin:0; }
