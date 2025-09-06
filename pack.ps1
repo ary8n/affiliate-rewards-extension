@@ -29,6 +29,13 @@ $include = @(
 $files = $include | Where-Object { Test-Path $_ }
 if (-not $files.Count) { throw 'No files found to package.' }
 
+# Ensure icons exist (generate if script present and any missing)
+$iconMissing = @('icons/icon16.png','icons/icon48.png','icons/icon128.png') | Where-Object { -not (Test-Path $_) }
+if ($iconMissing.Count -gt 0 -and (Test-Path 'generate-icons.ps1')) {
+  Write-Host 'Missing icons detected. Generating...' -ForegroundColor Yellow
+  powershell -ExecutionPolicy Bypass -File ./generate-icons.ps1 -Letter 'R' | Out-Null
+}
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zipTmp = [System.IO.Path]::Combine($env:TEMP, [System.IO.Path]::GetRandomFileName())
 [System.IO.Directory]::CreateDirectory($zipTmp) | Out-Null

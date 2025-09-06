@@ -57,6 +57,13 @@ The extension now includes an `options.html` page accessible via the extension c
 3. Provide clear description & screenshots (banner + popup + options page).
 4. Upload ZIP of project root (exclude `.git`).
 5. Link to `PRIVACY.md` and summarize minimal data usage (local only).
+ 6. (Optional) Tag a release (`git tag v0.3.0 && git push --tags`) to auto-build a ZIP via GitHub Actions.
+
+### Remote Data Hosting Example
+You can host affiliate list JSON on GitHub and use the raw link in settings:
+`https://raw.githubusercontent.com/ary8n/affiliate-rewards-extension/master/data/affiliate-remote-sample.json`
+
+Paste that URL into the Options page under Remote affiliate data URL.
 
 ## Store Submission Checklist
 - [x] Manifest V3, correct permissions minimal.
