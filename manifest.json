@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Affiliate Rewards Helper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Automatically detects affiliate opportunities and tracks reward points.",
   "permissions": ["storage", "tabs", "scripting", "contextMenus"],
   "web_accessible_resources": [
@@ -11,9 +11,15 @@
     }
   ],
   "host_permissions": [
-    "*://www.amazon.*/*",
-    "*://amazon.*/*",
-    "*://www.flipkart.com/*"
+    "https://www.amazon.com/*",
+    "https://www.amazon.in/*",
+    "https://www.amazon.co.uk/*",
+    "https://www.amazon.de/*",
+    "https://amazon.com/*",
+    "https://amazon.in/*",
+    "https://amazon.co.uk/*",
+    "https://amazon.de/*",
+    "https://www.flipkart.com/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
@@ -27,9 +33,15 @@
   "content_scripts": [
     {
       "matches": [
-        "*://www.amazon.*/*",
-        "*://amazon.*/*",
-        "*://www.flipkart.com/*"
+        "https://www.amazon.com/*",
+        "https://www.amazon.in/*",
+        "https://www.amazon.co.uk/*",
+        "https://www.amazon.de/*",
+        "https://amazon.com/*",
+        "https://amazon.in/*",
+        "https://amazon.co.uk/*",
+        "https://amazon.de/*",
+        "https://www.flipkart.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"
