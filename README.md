@@ -6,8 +6,11 @@ Chrome extension (Manifest V3) that detects affiliate opportunities on Amazon & 
 - Detect product identifiers (Amazon ASIN, basic Flipkart product IDs)
 - Match against local `data/affiliate-list.json`
 - Inject activation banner with estimated points & revenue split (50/50 self, 40/40/20 contributor)
+- Parse product price (when available) and compute dynamic point estimate: `price * commissionRate * userShare`
 - Update and persist points using `chrome.storage.local`
 - Popup shows current points & placeholder redeem action
+ - Optional remote affiliate list URL (user-specified)
+ - Optional anonymous analytics toggle (OFF by default)
 
 ## File Overview
 - `manifest.json` – Extension configuration
@@ -46,6 +49,7 @@ Chrome extension (Manifest V3) that detects affiliate opportunities on Amazon & 
 The extension now includes an `options.html` page accessible via the extension card or context menu (right-click the action icon). Settings stored in `chrome.storage.sync`:
 - `bannerEnabled` – toggle banner injection globally (default ON)
 - `remoteDataUrl` – optional HTTPS JSON endpoint returning an array of affiliate entries identical in shape to `data/affiliate-list.json`.
+ - `analyticsEnabled` – when enabled, logs lightweight anonymized events in the console (future: send to backend).
 
 ## Packaging for Chrome Web Store
 1. Increment `version` in `manifest.json`.

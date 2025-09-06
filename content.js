@@ -3,6 +3,16 @@
 
 const BANNER_ID = "affiliate_rewards_banner";
 const DATA_PATH = chrome.runtime.getURL("data/affiliate-list.json");
+// Analytics dynamic import (only when needed)
+let analyticsModule = null;
+async function track(name, data) {
+  try {
+    if (!analyticsModule) {
+      analyticsModule = await import(chrome.runtime.getURL('analytics.js'));
+    }
+    analyticsModule.trackEvent(name, data);
+  } catch (_) {}
+}
 let settingsCache = { bannerEnabled: true, remoteDataUrl: null };
 
 function loadSettings() {
@@ -75,10 +85,56 @@ function computeSplit(link) {
 
 function estimatePoints(link) {
   const split = computeSplit(link);
-  // Simplified: points = commissionRate * userShare * 100 (placeholder)
-  // Real world you'd multiply by product price after purchase confirmation.
-  const points = Math.round(split.commissionRate * split.userShare * 1000) / 10; // one decimal
-  return { points, split };
+  const price = extractPrice();
+  let points;
+  if (price) {
+    // Points = price * commissionRate * userShare (rounded to nearest int)
+    points = Math.round(price * split.commissionRate * split.userShare);
+  } else {
+    // Fallback legacy estimation
+    points = Math.round(split.commissionRate * split.userShare * 1000) / 10;
+  }
+  return { points, split, price };
+}
+
+function extractPrice() {
+  try {
+    // Amazon price selectors
+    let priceText = null;
+    const amazonSelectors = [
+      '#corePriceDisplay_desktop_feature_div span.a-price span.a-offscreen',
+      '#priceblock_ourprice',
+      '#priceblock_dealprice',
+      '#priceblock_saleprice',
+      'span.a-price.a-text-price span.a-offscreen'
+    ];
+    const flipkartSelectors = [
+      'div._30jeq3._16Jk6d', // primary price
+      'div._25b18c div._30jeq3'
+    ];
+    const host = location.host.toLowerCase();
+    const sels = host.includes('amazon.') ? amazonSelectors : (host.includes('flipkart.com') ? flipkartSelectors : []);
+    for (const sel of sels) {
+      const el = document.querySelector(sel);
+      if (el && el.textContent.trim()) { priceText = el.textContent.trim(); break; }
+    }
+    if (!priceText) return null;
+    // Remove currency symbols, commas
+    priceText = priceText.replace(/[^0-9.,]/g, '').replace(/,/g, '');
+    // Handle formats like 1,234.56 or 1.234,56 (assume last separator is decimal if followed by 2 digits)
+    const decimalMatch = priceText.match(/([0-9]+)[.,]([0-9]{2})$/);
+    let value;
+    if (decimalMatch) {
+      value = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+      if (isNaN(value)) value = parseFloat(decimalMatch[1]);
+    } else {
+      value = parseFloat(priceText);
+    }
+    if (!isNaN(value) && value > 0) return value;
+    return null;
+  } catch (e) {
+    return null;
+  }
 }
 
 function injectBanner(linkMatch) {
@@ -98,7 +154,8 @@ function injectBanner(linkMatch) {
   const detail = document.createElement("div");
   detail.style.fontSize = "12px";
   const splitText = link.ownerType === "self" ? "50% you / 50% platform" : "40% you / 40% contributor / 20% platform";
-  detail.textContent = `Est. +${estimate.points} pts • Split: ${splitText}`;
+  const priceFragment = estimate.price ? ` on ~₹${estimate.price}` : '';
+  detail.textContent = `Est. +${estimate.points} pts${priceFragment} • Split: ${splitText}`;
 
   const actionBtn = document.createElement("button");
   actionBtn.textContent = "Activate Affiliate Link";
@@ -115,7 +172,8 @@ function injectBanner(linkMatch) {
   closeBtn.onclick = removeBanner;
 
   actionBtn.addEventListener("click", () => {
-    incrementPoints(estimate.points).then(() => {
+    incrementPoints(estimate.points).then(newTotal => {
+      track('activation_click', { productId: link.productId, pointsAwarded: estimate.points, newTotal });
       window.location.href = link.affiliateUrl;
     });
   });
@@ -125,6 +183,7 @@ function injectBanner(linkMatch) {
   banner.appendChild(detail);
   banner.appendChild(actionBtn);
   document.body.appendChild(banner);
+  track('banner_shown', { platform: link.platform, ownerType: link.ownerType, hasPrice: !!estimate.price });
 }
 
 function removeBanner() {

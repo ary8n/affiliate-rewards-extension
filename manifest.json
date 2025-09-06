@@ -1,9 +1,15 @@
 {
   "manifest_version": 3,
   "name": "Affiliate Rewards Helper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Automatically detects affiliate opportunities and tracks reward points.",
   "permissions": ["storage", "tabs", "scripting", "contextMenus"],
+  "web_accessible_resources": [
+    {
+      "resources": ["analytics.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "host_permissions": [
     "*://www.amazon.*/*",
     "*://amazon.*/*",
